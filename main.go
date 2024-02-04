@@ -12,7 +12,7 @@ type GameState struct {
 	Field [Width][Height]bool
 }
 
-func (g GameState) printState() {
+func (g *GameState) printState() {
 	s := ""
 	for y := 0; y < Width; y++ {
 		for x := 0; x < Height; x++ {
@@ -28,13 +28,13 @@ func (g GameState) printState() {
 	fmt.Println(s)
 }
 
-func initState(g *GameState) {
+func (g *GameState) initState() {
 	g.Field[2][2] = true
 	g.Field[2][3] = true
 	g.Field[2][4] = true
 }
 
-func countNeighbours(g *GameState, cellX int, cellY int) int {
+func (g *GameState) countNeighbours(cellX int, cellY int) int {
 	var count = 0
 
 	for dy := -1; dy <= 1; dy++ {
@@ -53,12 +53,12 @@ func countNeighbours(g *GameState, cellX int, cellY int) int {
 	return count
 }
 
-func makeTurn(g *GameState) {
+func (g *GameState) makeTurn() {
 	var newField [Width][Height]bool
 
 	for y := 0; y < Height; y++ {
 		for x := 0; x < Width; x++ {
-			var n = countNeighbours(g, x, y)
+			var n = g.countNeighbours(x, y)
 			var cell = g.Field[x][y]
 			if (cell && (n == 2 || n == 3)) || (!cell && n == 3) {
 				newField[x][y] = true
@@ -74,11 +74,11 @@ func makeTurn(g *GameState) {
 func main() {
 	var game GameState
 
-	initState(&game)
+	game.initState()
 	for {
 		//Clear screen
 		fmt.Print("\x1B[2J")
-		makeTurn(&game)
+		game.makeTurn()
 		game.printState()
 		time.Sleep(500 * time.Millisecond)
 	}
